@@ -49,7 +49,6 @@ env/
 .idea/
 
 # Data and config files
-*.csv
 *.zip
 config/
 
