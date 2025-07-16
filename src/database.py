@@ -2,6 +2,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import os
 from dotenv import load_dotenv
+from pgvector.psycopg2 import register_vector
 
 load_dotenv()
 
@@ -11,9 +12,11 @@ class DatabaseManager:
             host=os.getenv("DB_HOST", "localhost"),
             database=os.getenv("DB_NAME", "chatbot_db"),
             user=os.getenv("DB_USER", "chatbot_user"),
-            password=os.getenv("DB_PASSWORD", "your_password"),
+            password=os.getenv("DB_PASSWORD", "Shubh991@#"),
             cursor_factory=RealDictCursor
         )
+        self.conn.autocommit = True
+        register_vector(self.conn)
         self.create_tables()
     
     def create_tables(self):

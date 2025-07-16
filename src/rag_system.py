@@ -22,7 +22,7 @@ class RAGSystem:
             FROM conversations
             ORDER BY embedding <-> %s
             LIMIT %s
-        """, (query_embedding.tolist(), query_embedding.tolist(), top_k))
+        """, (query_embedding, query_embedding, top_k))  # Pass raw NumPy array
         
         results = cursor.fetchall()
         cursor.close()
@@ -40,7 +40,7 @@ class RAGSystem:
             FROM entities
             ORDER BY embedding <-> %s
             LIMIT %s
-        """, (query_embedding.tolist(), query_embedding.tolist(), top_k))
+        """, (query_embedding, query_embedding, top_k))  # Pass raw NumPy array
         
         results = cursor.fetchall()
         cursor.close()
@@ -75,7 +75,7 @@ class RAGSystem:
         """
         
         try:
-            model = genai.GenerativeModel('gemini-pro')
+            model = genai.GenerativeModel('gemini-2.0-flash')
             response = model.generate_content(prompt)
             return response.text
         except Exception as e:
