@@ -6,7 +6,8 @@ from pgvector.psycopg2 import register_vector
 
 load_dotenv()
 
-class DatabaseManager:
+#PostgreSql Database Connection
+class DatabaseConnection:
     def __init__(self):
         self.conn = psycopg2.connect(
             host=os.getenv("DB_HOST", "localhost"),
@@ -20,10 +21,14 @@ class DatabaseManager:
         self.create_tables()
     
     def create_tables(self):
-        cursor = self.conn.cursor()
-        
-        # Create conversations table
-        cursor.execute("""
+        """
+        Create required tables and indexes for conversations, entities, and relationships.
+        """
+        db_operator = self.conn.cursor()
+
+        # Table for storing chat conversations
+        db_operator.execute(
+            """
             CREATE TABLE IF NOT EXISTS conversations (
                 id SERIAL PRIMARY KEY,
                 user_input TEXT NOT NULL,
@@ -32,11 +37,12 @@ class DatabaseManager:
                 intent VARCHAR(100),
                 embedding vector(384),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-        
-        # Create knowledge graph nodes
-        cursor.execute("""
+            )   """
+        )
+
+        # Table for storing knowledge graph entities
+        db_operator.execute(
+            """
             CREATE TABLE IF NOT EXISTS entities (
                 id SERIAL PRIMARY KEY,
                 name VARCHAR(255) UNIQUE NOT NULL,
@@ -45,10 +51,12 @@ class DatabaseManager:
                 embedding vector(384),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        """)
-        
-        # Create knowledge graph relationships
-        cursor.execute("""
+            """
+        )
+
+        # Table for storing relationships between entities
+        db_operator.execute(
+            """
             CREATE TABLE IF NOT EXISTS relationships (
                 id SERIAL PRIMARY KEY,
                 source_entity_id INTEGER REFERENCES entities(id),
@@ -57,20 +65,26 @@ class DatabaseManager:
                 weight FLOAT DEFAULT 1.0,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-        """)
-        
-        # Create vector indexes for fast similarity search
-        cursor.execute("""
+            """
+        )
+
+        # Index for fast vector search in conversations
+        db_operator.execute(
+            """
             CREATE INDEX IF NOT EXISTS conversations_embedding_idx 
             ON conversations USING ivfflat (embedding vector_cosine_ops) 
             WITH (lists = 100)
-        """)
-        
-        cursor.execute("""
+            """
+        )
+
+        # Index for fast vector search in entities
+        db_operator.execute(
+            """
             CREATE INDEX IF NOT EXISTS entities_embedding_idx 
             ON entities USING ivfflat (embedding vector_cosine_ops) 
             WITH (lists = 100)
-        """)
-        
+            """
+        )
+
         self.conn.commit()
-        cursor.close()
+        db_operator.close()
