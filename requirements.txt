@@ -1,0 +1,17 @@
+psycopg2-binary
+pgvector
+openai
+langchain
+langchain-openai
+sentence-transformers
+numpy
+pandas
+python-dotenv
+fastapi
+uvicorn
+streamlit
+kaggle
+networkx
+matplotlib
+seaborn
+scikit-learn
