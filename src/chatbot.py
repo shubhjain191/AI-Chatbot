@@ -5,7 +5,6 @@ import os
 class ChatBot:
     def __init__(self):
         self.rag_system = RAGSystem()
-        self.kg_builder = KnowledgeGraphBuilder()
     
     #Streamlit Page Configuration
     def run_streamlit_app(self):
